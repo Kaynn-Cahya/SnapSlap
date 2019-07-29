@@ -46,6 +46,9 @@ public class PlayerHand : MonoBehaviour {
         if (TryGetPlayerHandFromCollision(out PlayerHand otherPlayerHand)) {
             if (IsPunching) {
                 contactedOtherHandRecently = true;
+                GameManager.Instance.ShakeCamera();
+            } else {
+                StartCoroutine(RecoilCoroutine());
             }
         }
 
@@ -60,6 +63,49 @@ public class PlayerHand : MonoBehaviour {
         #endregion
     }
 
+    private IEnumerator RecoilCoroutine() {
+        float currentRecoilDistance = 0f;
+
+        while (InHandRecoilAnimation()) {
+            RecoilHandOnCurrentFrame(Time.deltaTime);
+
+            yield return new WaitForEndOfFrame();
+        }
+
+        Vector3 start = transform.position;
+        float progress = 0f;
+        while (progress < 1f) {
+
+            LerpHandBackToStartPositionByProgress();
+
+            progress += Time.deltaTime * 20;
+            yield return new WaitForEndOfFrame();
+        }
+
+        transform.position = startPosition;
+
+        #region Local_Function
+
+        void LerpHandBackToStartPositionByProgress() {
+            var temp = Vector3.Lerp(start, startPosition, progress);
+            transform.position = temp;
+        }
+
+        bool InHandRecoilAnimation() {
+            return currentRecoilDistance < handDrawbackDistance;
+        }
+
+        void RecoilHandOnCurrentFrame(float deltaTime) {
+            float currentFrameDistanceCovered = deltaTime * handDrawbackSpeed;
+
+            currentRecoilDistance += currentFrameDistanceCovered;
+
+            float xValue = DetermineHandDrawbackDirection();
+            transform.position += new Vector3(currentFrameDistanceCovered * xValue, 0f, 0f);
+        }
+
+        #endregion
+    }
 
     public void TriggerPunch() {
         if (GameManager.Instance.EitherPlayerIsPunching()) {
@@ -69,6 +115,7 @@ public class PlayerHand : MonoBehaviour {
         IsPunching = true;
         punchingCoroutine = StartCoroutine(PunchCoroutine());
     }
+
 
     private IEnumerator PunchCoroutine() {
 
