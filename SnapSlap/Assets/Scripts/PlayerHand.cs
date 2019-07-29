@@ -1,12 +1,22 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 using MyBox;
 
 public class PlayerHand : MonoBehaviour {
 
-    [SerializeField, Tooltip("True if this is the hand on the left")]
+    [Separator("Debug")]
+    [SerializeField, Tooltip("The button to press to activate punch"), SearchableEnum]
+    private KeyCode activatePunchKeycode;
+
+    [SerializeField, Tooltip("The button used to activate punch"), MustBeAssigned]
+    private Button activatePuncButton;
+
+    [Separator("Player Identifier")]
+
+    [SerializeField, Tooltip("True if this is the hand on the left (Player 2)")]
     private bool handOnLeft;
 
     [Separator("Punch properties")]
@@ -41,12 +51,21 @@ public class PlayerHand : MonoBehaviour {
         startPosition = transform.position;
     }
 
+    private void Update() {
+        if (Input.GetKeyDown(activatePunchKeycode)) {
+            if (!activatePuncButton.interactable) { return; }
+            TriggerPunch();
+        }
+    }
+
     private void OnCollisionEnter(Collision collision) {
 
         if (TryGetPlayerHandFromCollision(out PlayerHand otherPlayerHand)) {
             if (IsPunching) {
                 contactedOtherHandRecently = true;
                 GameManager.Instance.ShakeCamera();
+
+                GameManager.Instance.TriggerPlayerGotPunched(handOnLeft);
             } else {
                 StartCoroutine(RecoilCoroutine());
             }
@@ -108,12 +127,19 @@ public class PlayerHand : MonoBehaviour {
     }
 
     public void TriggerPunch() {
-        if (GameManager.Instance.EitherPlayerIsPunching()) {
+        if (NotAllowedToPunch()) {
             return;
         }
 
         IsPunching = true;
         punchingCoroutine = StartCoroutine(PunchCoroutine());
+
+        #region Local_Function
+        bool NotAllowedToPunch() {
+            return GameManager.Instance.EitherPlayerIsPunching() || GameManager.Instance.RoundOver;
+        }
+
+        #endregion
     }
 
 
