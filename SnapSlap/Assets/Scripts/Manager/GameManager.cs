@@ -14,9 +14,17 @@ public class GameManager : Singleton<GameManager> {
     private PlayerHand player2Hand;
 
     [Separator("Scene Objects")]
-
     [SerializeField, Tooltip("The camera that can be shaked"), MustBeAssigned]
     private ObjectShaker shakableCamera;
+
+    /// <summary>
+    /// True if the punch is now valid.
+    /// </summary>
+    public bool PunchIsValid { get; set; }
+
+    private void Awake() {
+        PunchIsValid = false;
+    }
 
     public bool EitherPlayerIsPunching() {
         return player1Hand.IsPunching || player2Hand.IsPunching;
