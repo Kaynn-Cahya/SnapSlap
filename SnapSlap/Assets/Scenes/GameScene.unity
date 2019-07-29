@@ -1211,7 +1211,7 @@ MonoBehaviour:
   player1WinsDisplay: {fileID: 85147397}
   player2WinsDisplay: {fileID: 1604750891}
   fadePanel: {fileID: 610176947}
-  fadePanelFadingSpeed: 0.35
+  fadePanelFadingSpeed: 0.5
   player1ScoreText: {fileID: 2137322381}
   player2ScoreText: {fileID: 389782988}
   player1PunchButton: {fileID: 1527501248}

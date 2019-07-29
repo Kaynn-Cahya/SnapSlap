@@ -12,7 +12,9 @@ public class MaxScoreSlider : MonoBehaviour {
     private Text maxScoreText;
 
     private void Awake() {
-        maxScoreText.text = ((int)maxScoreSlider.value).ToString();
+        int startSliderValueInt = (int)maxScoreSlider.value;
+        maxScoreText.text = startSliderValueInt.ToString();
+        GlobalProperties.MaxScore = startSliderValueInt;
 
         maxScoreSlider.onValueChanged.AddListener(OnSliderValueChanged);
     }
