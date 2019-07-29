@@ -136,7 +136,7 @@ public class PlayerHand : MonoBehaviour {
 
         #region Local_Function
         bool NotAllowedToPunch() {
-            return GameManager.Instance.EitherPlayerIsPunching() || GameManager.Instance.RoundOver;
+            return GameManager.Instance.EitherPlayerIsPunching() || GameManager.Instance.RoundOver || GameManager.Instance.GameOver;
         }
 
         #endregion

@@ -48,6 +48,10 @@ public class GameManager : Singleton<GameManager> {
     [SerializeField, Tooltip("The hidden button for player 2 to punch"), MustBeAssigned]
     private Button player2PunchButton;
 
+    [Separator("Game over")]
+    [SerializeField, Tooltip("The canvas to show when the game is over"), MustBeAssigned]
+    private GameObject gameOverCanvas;
+
     /// <summary>
     /// True if the punch is now valid.
     /// </summary>
@@ -58,20 +62,15 @@ public class GameManager : Singleton<GameManager> {
 
     public bool RoundOver { get; private set; }
 
+    public bool GameOver { get; private set; }
+
 
     private void Awake() {
         PunchIsValid = false;
         RoundOver = false;
         Player1Score = 0;
         Player2Score = 0;
-    }
-
-    public bool EitherPlayerIsPunching() {
-        return player1Hand.IsPunching || player2Hand.IsPunching;
-    }
-
-    public void ShakeCamera() {
-        shakableCamera.TriggerShake();
+        GameOver = false;
     }
 
     public void TriggerPlayerGotPunched(bool player1GotPunched) {
@@ -88,14 +87,19 @@ public class GameManager : Singleton<GameManager> {
         #region Local_Function
 
         void HandleValidPunchThrown() {
-            ShowWinDisplayByPlayerPunched();
-
             DisableAllButtons();
-            fadePanel.FadeGraphicToColor(Color.black, fadePanelFadingSpeed, FadePanelToTransparentBeforeStartingNextRound);
-
             AddScoreToRespectivePlayer();
+            HandleIfGameOver();
 
-            RoundOver = true;
+            if (GameOver) {
+                fadePanel.FadeGraphicToColor(Color.black, fadePanelFadingSpeed, ShowGameOverCanvas);
+            } else {
+                ShowWinDisplayByPlayerPunched();
+
+                fadePanel.FadeGraphicToColor(Color.black, fadePanelFadingSpeed, FadePanelToTransparentBeforeStartingNextRound);
+
+                RoundOver = true;
+            }
         }
 
         void AddScoreToRespectivePlayer() {
@@ -126,6 +130,29 @@ public class GameManager : Singleton<GameManager> {
     }
 
     #region Util
+
+    public bool EitherPlayerIsPunching() {
+        return player1Hand.IsPunching || player2Hand.IsPunching;
+    }
+
+    public void ShakeCamera() {
+        shakableCamera.TriggerShake();
+    }
+
+    private void ShowGameOverCanvas() {
+        gameOverCanvas.SetActive(true);
+    }
+
+    private void HandleIfGameOver() {
+
+        if (Player1Score >= GlobalProperties.MaxScore) {
+            GameOver = true;
+            player1WinsDisplay.SetActive(true);
+        } else if (Player2Score >= GlobalProperties.MaxScore) {
+            GameOver = true;
+            player2WinsDisplay.SetActive(true);
+        }
+    }
 
     private void AddScoreToPlayer1() {
         ++Player1Score;
