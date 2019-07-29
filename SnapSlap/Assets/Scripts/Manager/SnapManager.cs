@@ -64,12 +64,15 @@ public class SnapManager : Singleton<SnapManager> {
     }
 
     private void AllowPunching() {
+        AudioManager.Instance.PlaySFXByAudioType(AudioType.Signal);
+        AudioManager.Instance.StopBGMAudioSource();
         ShowGoSprite();
         GameManager.Instance.PunchIsValid = true;
         DisplayValidPunchColor();
     }
 
     public void RestartPunchCountdown() {
+        AudioManager.Instance.PlayBGMAudioSource();
         CountdownPaused = false;
         ShowReadySprite();
         GameManager.Instance.PunchIsValid = false;

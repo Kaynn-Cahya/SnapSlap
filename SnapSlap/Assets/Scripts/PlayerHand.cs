@@ -64,6 +64,7 @@ public class PlayerHand : MonoBehaviour {
             if (IsPunching) {
                 contactedOtherHandRecently = true;
                 GameManager.Instance.ShakeCamera();
+                AudioManager.Instance.PlaySFXByAudioType(AudioType.Impact);
 
                 GameManager.Instance.TriggerPlayerGotPunched(handOnLeft);
             } else {
@@ -130,6 +131,8 @@ public class PlayerHand : MonoBehaviour {
         if (NotAllowedToPunch()) {
             return;
         }
+
+        AudioManager.Instance.PlaySFXByAudioType(AudioType.ButtonPress);
 
         IsPunching = true;
         punchingCoroutine = StartCoroutine(PunchCoroutine());

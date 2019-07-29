@@ -77,6 +77,7 @@ public class GameManager : Singleton<GameManager> {
         SnapManager.Instance.DisableReadyGoImage();
         SnapManager.Instance.StopPunchCountdown();
         DisableAllDisplays();
+        AudioManager.Instance.StopBGMAudioSource();
 
         if (PunchIsValid) {
             HandleValidPunchThrown();
@@ -87,6 +88,7 @@ public class GameManager : Singleton<GameManager> {
         #region Local_Function
 
         void HandleValidPunchThrown() {
+            AudioManager.Instance.PlaySFXByAudioType(AudioType.Victory);
             DisableAllButtons();
             AddScoreToRespectivePlayer();
             HandleIfGameOver();
